@@ -1,0 +1,40 @@
+name: build-and-push
+
+# 作用：在 GitHub 的云端机器上构建镜像，并推送到 GitHub 容器仓库（GHCR）
+# 视频里「第一个工作流」= 这个文件；「第二个工作流」= 平台侧的镜像同步（见 README 第 5 节）
+
+on:
+  workflow_dispatch:        # 允许手动点击运行
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write       # 推送镜像到 GHCR 需要这个权限
+    steps:
+      - name: 取出仓库代码
+        uses: actions/checkout@v4
+
+      # GHCR 的镜像名必须全小写，这里自动转换
+      - name: 计算镜像名
+        id: img
+        run: echo "name=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+
+      - name: 登录 GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 构建并推送
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ steps.img.outputs.name }}:latest
+            ${{ steps.img.outputs.name }}:${{ github.sha }}

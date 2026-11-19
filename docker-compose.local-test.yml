@@ -1,0 +1,17 @@
+# 本地自测用（可选）：不需要平台也能先验证镜像和端口是否正常
+# 启动：docker compose -f docker-compose.local-test.yml up --build
+# 验证：浏览器打开 http://127.0.0.1:8081/  （备用节点是 WebSocket，浏览器会显示 400/404，属正常）
+services:
+  vless:
+    build: .
+    container_name: vless-local-test
+    ports:
+      - "8443:8443"
+      - "8081:8081"
+    environment:
+      UUID: "11111111-2222-3333-4444-555555555555"
+      PORT_A: "8443"
+      PORT_B: "8081"
+      WS_PATH: "/vless"
+      WS_PATH_BAK: "/vless-bak"
+    restart: unless-stopped

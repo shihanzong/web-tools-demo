@@ -1,0 +1,47 @@
+{
+    "log": { "loglevel": "warning" },
+    "inbounds": [
+          {
+                  "tag": "vless-ws-main",
+                  "listen": "0.0.0.0",
+                  "port": __PORT_A__,
+                  "protocol": "vless",
+                  "settings": {
+                            "clients": [{ "id": "__UUID__", "email": "main" }],
+                            "decryption": "none"
+                  },
+                  "streamSettings": {
+                            "network": "ws",
+                            "security": "none",
+                            "wsSettings": {
+                                        "path": "__WS_PATH__",
+                                        "headers": {}
+                            }
+                  },
+                  "sniffing": { "enabled": true, "destOverride": ["http", "tls", "quic"] }
+          },
+          {
+                  "tag": "vless-ws-backup",
+                  "listen": "0.0.0.0",
+                  "port": __PORT_B__,
+                  "protocol": "vless",
+                  "settings": {
+                            "clients": [{ "id": "__UUID__", "email": "backup" }],
+                            "decryption": "none"
+                  },
+                  "streamSettings": {
+                            "network": "ws",
+                            "security": "none",
+                            "wsSettings": {
+                                        "path": "__WS_PATH_BAK__",
+                                        "headers": {}
+                            }
+                  },
+                  "sniffing": { "enabled": true, "destOverride": ["http", "tls", "quic"] }
+          }
+    ],
+    "outbounds": [
+          { "tag": "direct", "protocol": "freedom", "settings": {} },
+          { "tag": "block", "protocol": "blackhole", "settings": {} }
+    ]
+}
